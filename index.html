@@ -30,7 +30,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column; /* Ditambahkan agar konten dan footer tertata baik */
+            flex-direction: column;
             overflow: hidden;
             position: relative;
             padding: 20px;
@@ -61,7 +61,6 @@
             text-align: center;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             display: flex; flex-direction: column; align-items: center;
-            /* Margin bawah agar tidak menabrak copyright di layar kecil */
             margin-bottom: 40px;
         }
 
@@ -139,7 +138,44 @@
             background-color: rgba(56, 189, 248, 0.3);
         }
 
-        /* Preloader */
+        .quote-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: rgba(56, 189, 248, 0.3);
+            color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .icon-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+            transition: transform 0.2s ease;
+        }
+
+        .icon-btn:active svg { transform: scale(0.9); }
+
         .loader-container { display: flex; justify-content: center; align-items: center; gap: 12px; height: 100%; }
         .loader-dot {
             width: 15px; height: 15px; border-radius: 50%;
@@ -155,7 +191,7 @@
         }
 
         .btn-random {
-            margin-top: 3rem;
+            margin-top: 2rem;
             background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
             color: white; border: none;
             padding: clamp(12px, 3vw, 15px) clamp(25px, 5vw, 40px);
@@ -170,7 +206,6 @@
         .btn-random:active { transform: translateY(1px); }
         .btn-random:disabled { background: #475569; box-shadow: none; cursor: not-allowed; transform: none; }
 
-        /* --- CSS BARU UNTUK COPYRIGHT --- */
         .app-copyright {
             position: absolute;
             bottom: 20px;
@@ -183,7 +218,6 @@
             transition: opacity 0.5s ease;
         }
 
-        /* Khusus bahasa Arab agak dibesarkan sedikit fontnya */
         .app-copyright.arabic-font {
             font-family: 'Amiri', serif;
             font-size: clamp(0.9rem, 2vw, 1rem);
@@ -223,6 +257,19 @@
 
     <p id="quoteAuthor" class="quote-author"></p>
 
+    <div class="quote-actions copy-fade-out" id="quoteActions">
+        <button class="icon-btn" id="btnCopy" aria-label="Salin Kutipan" title="Salin Teks">
+            <svg id="iconCopy" viewBox="0 0 24 24">
+                <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+        </button>
+        <button class="icon-btn" id="btnShare" aria-label="Bagikan Kutipan" title="Bagikan ke Media Sosial">
+            <svg viewBox="0 0 24 24">
+                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
+            </svg>
+        </button>
+    </div>
+
     <button id="btnGenerate" class="btn-random" disabled>Loading...</button>
 
 </main>
@@ -238,34 +285,37 @@
             </div>
         `;
 
-    // Penambahan Teks Copyright ke dalam Kamus Bahasa
     const uiTranslations = {
         'ID': {
             docTitle: 'Kutipan Al-Qur\'an',
             btnNext: 'Kutipan Lainnya ✨',
             emptyData: 'Belum ada kutipan tersedia.',
             errorMsg: 'Gagal memuat data.',
-            copyText: '© 2026 Abu Dzakiyyah. Hak Cipta Dilindungi.'
+            copyText: '© 2026 Abu Dzakiyyah. Hak Cipta Dilindungi.',
         },
         'EN': {
             docTitle: 'Quranic Quotes',
             btnNext: 'More Quotes ✨',
             emptyData: 'No quotes available.',
             errorMsg: 'Failed to load data.',
-            copyText: '© 2026 Abu Dzakiyyah. All rights reserved.'
+            copyText: '© 2026 Abu Dzakiyyah. All rights reserved.',
         },
         'AR': {
             docTitle: 'اقتباسات قرآنية',
             btnNext: 'اقتباس آخر ✨',
             emptyData: 'لا توجد اقتباسات متاحة.',
             errorMsg: 'فشل في تحميل البيانات.',
-            copyText: '© ٢٠٢٦ أبو زكية. جميع الحقوق محفوظة.'
+            copyText: '© ٢٠٢٦ أبو زكية. جميع الحقوق محفوظة.',
         }
     };
 
     const quoteContent = document.getElementById('quoteContent');
     const quoteAuthor = document.getElementById('quoteAuthor');
+    const quoteActions = document.getElementById('quoteActions');
     const btnGenerate = document.getElementById('btnGenerate');
+    const btnCopy = document.getElementById('btnCopy');
+    const btnShare = document.getElementById('btnShare');
+    const iconCopy = document.getElementById('iconCopy');
     const langBtns = document.querySelectorAll('.lang-btn');
     const langSlider = document.getElementById('langSlider');
     const appCopyright = document.getElementById('appCopyright');
@@ -273,6 +323,10 @@
     let allQuotes = [];
     let lastIndex = -1;
     let currentLang = localStorage.getItem('quoteApp_Lang') || 'ID';
+
+    // Simpan teks untuk dibagikan
+    let activeQuoteText = "";
+    let activeQuoteAuthor = "";
 
     const waktuGantiOtomatis = 60000;
     let autoPlayTimer;
@@ -349,15 +403,20 @@
 
         quoteContent.classList.add('fade-out');
         quoteAuthor.classList.add('fade-out');
+        quoteActions.classList.add('fade-out');
 
         if (isLangChange) {
             btnGenerate.classList.add('btn-fade-out');
-            appCopyright.classList.add('copy-fade-out'); // Copyright ikut memudar
+            appCopyright.classList.add('copy-fade-out');
         }
 
         setTimeout(() => {
             const newQuote = getRandomQuote();
             const texts = uiTranslations[currentLang];
+
+            // Perbarui data teks untuk Copy & Share
+            activeQuoteText = newQuote.content;
+            activeQuoteAuthor = newQuote.author;
 
             applyDynamicFontSize(newQuote.content.length);
 
@@ -371,7 +430,6 @@
 
             quoteAuthor.textContent = newQuote.author;
 
-            // Ubah teks UI yang terpengaruh bahasa
             if (isLangChange) {
                 btnGenerate.textContent = texts.btnNext;
                 appCopyright.textContent = texts.copyText;
@@ -385,6 +443,8 @@
 
             quoteContent.classList.remove('fade-out');
             quoteAuthor.classList.remove('fade-out');
+            quoteActions.classList.remove('fade-out');
+            quoteActions.classList.remove('copy-fade-out');
 
             if (isLangChange) {
                 btnGenerate.classList.remove('btn-fade-out');
@@ -392,6 +452,52 @@
             }
         }, 400);
     }
+
+    // --- LOGIKA TOMBOL COPY ---
+    btnCopy.addEventListener('click', async () => {
+        if (!activeQuoteText) return;
+        const textToCopy = `"${activeQuoteText}"\n\n— ${activeQuoteAuthor}`;
+
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+
+            // Animasi berhasil disalin (berubah jadi ikon centang hijau)
+            const originalPath = iconCopy.innerHTML;
+            iconCopy.innerHTML = `<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>`;
+            iconCopy.style.fill = "#28a745";
+
+            setTimeout(() => {
+                iconCopy.innerHTML = originalPath;
+                iconCopy.style.fill = "currentColor";
+            }, 2000);
+        } catch (err) {
+            console.error('Gagal menyalin:', err);
+        }
+    });
+
+    // --- LOGIKA TOMBOL SHARE (Tanpa URL agar fokus ke teks) ---
+    btnShare.addEventListener('click', async () => {
+        if (!activeQuoteText) return;
+        const textToShare = `"${activeQuoteText}"\n\n— ${activeQuoteAuthor}`;
+
+        try {
+            if (navigator.share) {
+                // Memanggil native Web Share API milik OS pengguna
+                await navigator.share({
+                    title: document.title,
+                    text: textToShare
+                    // Properti 'url' dihapus agar share fokus pada isi kutipan saja
+                });
+            } else {
+                // Fallback untuk Desktop PC yang tidak mendukung Native Share
+                // Mengarahkan langsung ke X (Twitter) Share Intent
+                const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(textToShare)}`;
+                window.open(twitterUrl, '_blank');
+            }
+        } catch (err) {
+            console.log('Proses share dibatalkan atau error:', err);
+        }
+    });
 
     function startAutoPlay() {
         clearInterval(autoPlayTimer);
@@ -430,8 +536,9 @@
 
         quoteContent.innerHTML = loaderHTML;
         quoteAuthor.textContent = "";
-        // Sembunyikan copyright selama loading
+
         appCopyright.classList.add('copy-fade-out');
+        quoteActions.classList.add('copy-fade-out');
 
         try {
             const promises = dataSources.map(source => fetchAndNormalize(source));
