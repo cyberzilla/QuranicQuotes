@@ -19,7 +19,11 @@ The database is fully localized and available in three languages to reach a wide
 The data is provided in two formats for maximum flexibility:
 
 ### 1. JSON Format
-Ideal for web and mobile applications using NoSQL or direct object mapping.
+Ideal for web and mobile applications using NoSQL or direct object mapping. You can directly fetch the raw data using the following endpoint links:
+
+- **Indonesian:** [https://cyberzilla.github.io/QuranicQuotes/direct/id-quotes.json](https://cyberzilla.github.io/QuranicQuotes/direct/id-quotes.json)
+- **Arabic:** [https://cyberzilla.github.io/QuranicQuotes/direct/ar-quotes.json](https://cyberzilla.github.io/QuranicQuotes/direct/ar-quotes.json)
+- **English:** [https://cyberzilla.github.io/QuranicQuotes/direct/en-quotes.json](https://cyberzilla.github.io/QuranicQuotes/direct/en-quotes.json)
 
 ### 2. SQLite Database (`quotes.sqlite`)
 A relational database file ready for production use. The table structure is as follows:
