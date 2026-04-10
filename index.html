@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kutipan Al-Qur'an</title>
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-bg: #0f172a;
+            --accent-color: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.05);
+            --out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 50%, #020617 100%);
+            color: var(--text-main);
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; /* Ditambahkan agar konten dan footer tertata baik */
+            overflow: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        .blob-1 {
+            position: fixed; top: -10%; left: -10%;
+            width: 50vw; height: 50vw; max-width: 500px; max-height: 500px;
+            background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, rgba(0,0,0,0) 70%);
+            z-index: 1; pointer-events: none;
+        }
+
+        .blob-2 {
+            position: fixed; bottom: -20%; right: -10%;
+            width: 60vw; height: 60vw; max-width: 600px; max-height: 600px;
+            background: radial-gradient(circle, rgba(168,85,247,0.15) 0%, rgba(0,0,0,0) 70%);
+            z-index: 1; pointer-events: none;
+        }
+
+        .quote-container {
+            position: relative; z-index: 10;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 5vw, 4rem);
+            width: 100%; max-width: 800px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex; flex-direction: column; align-items: center;
+            /* Margin bawah agar tidak menabrak copyright di layar kecil */
+            margin-bottom: 40px;
+        }
+
+        .lang-selector {
+            display: flex; flex-wrap: nowrap; justify-content: center; gap: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 6px; border-radius: 50px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            width: fit-content; max-width: 100%;
+            position: relative; z-index: 1;
+        }
+
+        .lang-slider {
+            position: absolute; top: 6px; left: 0;
+            height: calc(100% - 12px); width: 0;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.85) 0%, rgba(168, 85, 247, 0.85) 100%);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-radius: 50px; z-index: -1;
+            transition: transform 0.5s var(--out-cubic), width 0.5s var(--out-cubic);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .lang-btn {
+            background: transparent; color: var(--text-muted);
+            border: none; padding: 8px 20px; border-radius: 50px;
+            cursor: pointer; font-family: 'Poppins', sans-serif;
+            font-size: clamp(0.8rem, 2vw, 0.9rem); font-weight: 600;
+            transition: color 0.4s ease;
+            position: relative; z-index: 2;
+        }
+
+        .lang-btn:hover { color: white; }
+        .lang-btn.active { color: #0f172a; background: transparent; box-shadow: none; }
+
+        .quote-icon { color: var(--accent-color); opacity: 0.3; margin-bottom: 1rem; }
+        .quote-icon svg { width: clamp(32px, 5vw, 48px); height: auto; fill: currentColor; }
+
+        .quote-text-wrapper {
+            width: 100%; min-height: 30vh;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .quote-text {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            line-height: 1.5; font-weight: 400; font-style: italic;
+            color: #ffffff; margin: 0; width: 100%;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .quote-text.long-text { font-size: clamp(1.2rem, 3vw, 1.6rem); line-height: 1.6; }
+        .quote-text.xl-text { font-size: clamp(1rem, 2.5vw, 1.25rem); line-height: 1.7; }
+
+        .quote-text.arabic-font {
+            font-family: 'Amiri', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            line-height: 1.8; font-style: normal; direction: rtl;
+        }
+        .quote-text.arabic-font.long-text { font-size: clamp(1.6rem, 4vw, 2.2rem); }
+        .quote-text.arabic-font.xl-text { font-size: clamp(1.3rem, 3.5vw, 1.8rem); }
+
+        .quote-author {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            font-weight: 600; color: var(--accent-color);
+            letter-spacing: 1px; text-transform: uppercase;
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+            min-height: 24px;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .quote-author::before, .quote-author::after {
+            content: ""; display: block; width: clamp(20px, 4vw, 40px); height: 2px;
+            background-color: rgba(56, 189, 248, 0.3);
+        }
+
+        /* Preloader */
+        .loader-container { display: flex; justify-content: center; align-items: center; gap: 12px; height: 100%; }
+        .loader-dot {
+            width: 15px; height: 15px; border-radius: 50%;
+            background-color: var(--accent-color); box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+            animation: bounce 0.5s alternate infinite cubic-bezier(0.6, 0.05, 0.15, 0.95);
+        }
+        .loader-dot:nth-child(1) { animation-delay: 0s; }
+        .loader-dot:nth-child(2) { animation-delay: 0.15s; }
+        .loader-dot:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes bounce {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-20px); opacity: 0.3; }
+        }
+
+        .btn-random {
+            margin-top: 3rem;
+            background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
+            color: white; border: none;
+            padding: clamp(12px, 3vw, 15px) clamp(25px, 5vw, 40px);
+            font-size: clamp(0.9rem, 2vw, 1rem); font-weight: 600;
+            border-radius: 50px; cursor: pointer;
+            width: 100%; max-width: 300px; font-family: inherit; letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.4s ease;
+        }
+
+        .btn-random:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(56, 189, 248, 0.5); }
+        .btn-random:active { transform: translateY(1px); }
+        .btn-random:disabled { background: #475569; box-shadow: none; cursor: not-allowed; transform: none; }
+
+        /* --- CSS BARU UNTUK COPYRIGHT --- */
+        .app-copyright {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: clamp(0.7rem, 2vw, 0.85rem);
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.5px;
+            z-index: 5;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Khusus bahasa Arab agak dibesarkan sedikit fontnya */
+        .app-copyright.arabic-font {
+            font-family: 'Amiri', serif;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            letter-spacing: 0;
+            direction: rtl;
+        }
+
+        .fade-out { opacity: 0; transform: translateY(15px); }
+        .btn-fade-out { opacity: 0 !important; pointer-events: none; }
+        .copy-fade-out { opacity: 0 !important; }
+
+    </style>
+</head>
+<body>
+
+<div class="blob-1"></div>
+<div class="blob-2"></div>
+
+<main class="quote-container">
+
+    <div class="lang-selector" id="langSelector">
+        <div class="lang-slider" id="langSlider"></div>
+        <button class="lang-btn" data-lang="ID">Indonesia</button>
+        <button class="lang-btn" data-lang="EN">English</button>
+        <button class="lang-btn" data-lang="AR">العربية</button>
+    </div>
+
+    <div class="quote-icon">
+        <svg viewBox="0 0 24 24">
+            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+        </svg>
+    </div>
+
+    <div class="quote-text-wrapper">
+        <div id="quoteContent" class="quote-text"></div>
+    </div>
+
+    <p id="quoteAuthor" class="quote-author"></p>
+
+    <button id="btnGenerate" class="btn-random" disabled>Loading...</button>
+
+</main>
+
+<footer id="appCopyright" class="app-copyright"></footer>
+
+<script>
+    const loaderHTML = `
+            <div class="loader-container">
+                <div class="loader-dot"></div>
+                <div class="loader-dot"></div>
+                <div class="loader-dot"></div>
+            </div>
+        `;
+
+    // Penambahan Teks Copyright ke dalam Kamus Bahasa
+    const uiTranslations = {
+        'ID': {
+            docTitle: 'Kutipan Al-Qur\'an',
+            btnNext: 'Kutipan Lainnya ✨',
+            emptyData: 'Belum ada kutipan tersedia.',
+            errorMsg: 'Gagal memuat data.',
+            copyText: '© 2026 Abu Dzakiyyah. Hak Cipta Dilindungi.'
+        },
+        'EN': {
+            docTitle: 'Quranic Quotes',
+            btnNext: 'More Quotes ✨',
+            emptyData: 'No quotes available.',
+            errorMsg: 'Failed to load data.',
+            copyText: '© 2026 Abu Dzakiyyah. All rights reserved.'
+        },
+        'AR': {
+            docTitle: 'اقتباسات قرآنية',
+            btnNext: 'اقتباس آخر ✨',
+            emptyData: 'لا توجد اقتباسات متاحة.',
+            errorMsg: 'فشل في تحميل البيانات.',
+            copyText: '© ٢٠٢٦ أبو زكية. جميع الحقوق محفوظة.'
+        }
+    };
+
+    const quoteContent = document.getElementById('quoteContent');
+    const quoteAuthor = document.getElementById('quoteAuthor');
+    const btnGenerate = document.getElementById('btnGenerate');
+    const langBtns = document.querySelectorAll('.lang-btn');
+    const langSlider = document.getElementById('langSlider');
+    const appCopyright = document.getElementById('appCopyright');
+
+    let allQuotes = [];
+    let lastIndex = -1;
+    let currentLang = localStorage.getItem('quoteApp_Lang') || 'ID';
+
+    const waktuGantiOtomatis = 60000;
+    let autoPlayTimer;
+
+    const dataSources = [
+        { url: 'id-quotes.json', formatType: 'mainFolder', lang: 'ID' },
+        { url: 'en-quotes.json', formatType: 'mainFolder', lang: 'EN' },
+        { url: 'ar-quotes.json', formatType: 'mainFolder', lang: 'AR' },
+        { url: 'direct/id-quotes.json', formatType: 'directFolder', lang: 'ID' },
+        { url: 'direct/en-quotes.json', formatType: 'directFolder', lang: 'EN' },
+        { url: 'direct/ar-quotes.json', formatType: 'directFolder', lang: 'AR' }
+    ];
+
+    function isArabic(text) {
+        const arabicRegex = /[\u0600-\u06FF]/;
+        return arabicRegex.test(text);
+    }
+
+    async function fetchAndNormalize(source) {
+        const response = await fetch(source.url);
+        if (!response.ok) throw new Error(`Gagal memuat: ${source.url}`);
+        const data = await response.json();
+
+        return data.map(item => ({
+            author: (source.formatType === 'mainFolder' ? item.reference : item.author) || "Unknown",
+            content: (source.formatType === 'mainFolder' ? item.quotes : item.content) || "",
+            lang: source.lang
+        }));
+    }
+
+    function updateUIforLanguage(lang) {
+        const texts = uiTranslations[lang];
+        document.title = texts.docTitle;
+
+        langBtns.forEach(btn => {
+            if (btn.dataset.lang === lang) {
+                btn.classList.add('active');
+                langSlider.style.width = `${btn.offsetWidth}px`;
+                langSlider.style.transform = `translateX(${btn.offsetLeft}px)`;
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    function getRandomQuote() {
+        const filteredQuotes = allQuotes.filter(q => q.lang === currentLang);
+        if (filteredQuotes.length === 0) return { content: uiTranslations[currentLang].emptyData, author: "System" };
+
+        let randomIndex;
+        if (filteredQuotes.length > 1) {
+            do {
+                randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+            } while (filteredQuotes[randomIndex] === allQuotes[lastIndex]);
+        } else {
+            randomIndex = 0;
+        }
+
+        lastIndex = allQuotes.indexOf(filteredQuotes[randomIndex]);
+        return filteredQuotes[randomIndex];
+    }
+
+    function applyDynamicFontSize(textLength) {
+        quoteContent.classList.remove('long-text', 'xl-text');
+        if (textLength > 300) {
+            quoteContent.classList.add('xl-text');
+        } else if (textLength > 150) {
+            quoteContent.classList.add('long-text');
+        }
+    }
+
+    function displayNewQuote(isLangChange = false) {
+        if (allQuotes.length === 0) return;
+
+        quoteContent.classList.add('fade-out');
+        quoteAuthor.classList.add('fade-out');
+
+        if (isLangChange) {
+            btnGenerate.classList.add('btn-fade-out');
+            appCopyright.classList.add('copy-fade-out'); // Copyright ikut memudar
+        }
+
+        setTimeout(() => {
+            const newQuote = getRandomQuote();
+            const texts = uiTranslations[currentLang];
+
+            applyDynamicFontSize(newQuote.content.length);
+
+            if (isArabic(newQuote.content)) {
+                quoteContent.classList.add('arabic-font');
+                quoteContent.innerHTML = newQuote.content;
+            } else {
+                quoteContent.classList.remove('arabic-font');
+                quoteContent.innerHTML = `&ldquo;${newQuote.content}&rdquo;`;
+            }
+
+            quoteAuthor.textContent = newQuote.author;
+
+            // Ubah teks UI yang terpengaruh bahasa
+            if (isLangChange) {
+                btnGenerate.textContent = texts.btnNext;
+                appCopyright.textContent = texts.copyText;
+
+                if (currentLang === 'AR') {
+                    appCopyright.classList.add('arabic-font');
+                } else {
+                    appCopyright.classList.remove('arabic-font');
+                }
+            }
+
+            quoteContent.classList.remove('fade-out');
+            quoteAuthor.classList.remove('fade-out');
+
+            if (isLangChange) {
+                btnGenerate.classList.remove('btn-fade-out');
+                appCopyright.classList.remove('copy-fade-out');
+            }
+        }, 400);
+    }
+
+    function startAutoPlay() {
+        clearInterval(autoPlayTimer);
+        autoPlayTimer = setInterval(() => displayNewQuote(false), waktuGantiOtomatis);
+    }
+
+    btnGenerate.addEventListener('click', () => {
+        displayNewQuote(false);
+        startAutoPlay();
+    });
+
+    langBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const selectedLang = e.target.dataset.lang;
+            if (selectedLang === currentLang) return;
+
+            currentLang = selectedLang;
+            localStorage.setItem('quoteApp_Lang', currentLang);
+
+            updateUIforLanguage(currentLang);
+            displayNewQuote(true);
+            startAutoPlay();
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        updateUIforLanguage(currentLang);
+    });
+
+    async function initApp() {
+        if (document.fonts) {
+            document.fonts.ready.then(() => updateUIforLanguage(currentLang));
+        } else {
+            updateUIforLanguage(currentLang);
+        }
+
+        quoteContent.innerHTML = loaderHTML;
+        quoteAuthor.textContent = "";
+        // Sembunyikan copyright selama loading
+        appCopyright.classList.add('copy-fade-out');
+
+        try {
+            const promises = dataSources.map(source => fetchAndNormalize(source));
+            const results = await Promise.allSettled(promises);
+
+            results.forEach(result => {
+                if (result.status === 'fulfilled') {
+                    allQuotes = [...allQuotes, ...result.value];
+                }
+            });
+
+            if (allQuotes.length > 0) {
+                btnGenerate.disabled = false;
+                displayNewQuote(true);
+                startAutoPlay();
+            } else {
+                throw new Error("Data kosong");
+            }
+        } catch (error) {
+            console.error(error);
+            quoteContent.innerHTML = uiTranslations[currentLang].errorMsg;
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+</script>
+</body>
+</html>
