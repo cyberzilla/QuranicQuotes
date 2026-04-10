@@ -1,7 +1,11 @@
 # Quranic Tafsir Quotes Database
 
+## Live Demo
+Experience the interactive, multilingual Single Page Application (SPA) directly in your browser:
+🌐 **[https://cyberzilla.github.io/QuranicQuotes](https://cyberzilla.github.io/QuranicQuotes)**
+
 ## Overview
-This repository contains a rich and comprehensive database of 560 Islamic quotes derived from the Tafsir (exegesis) of the Holy Quran, primarily referencing the profound works of esteemed scholars such as Ibn Kathir and As-Sa'di. 
+This repository contains a rich and comprehensive database of 560 Islamic quotes derived from the Tafsir (exegesis) of the Holy Quran, primarily referencing the profound works of esteemed scholars such as Ibn Kathir and As-Sa'di.
 
 Spanning the entirety of the Quran from Surah Al-Fatihah (Juz 1) to Surah An-Nas (Juz 30), this collection was thoughtfully curated to serve as the core content for a daily reminder widget application.
 
